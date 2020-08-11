@@ -19,10 +19,17 @@ root = tk.Tk()
 root.title("Tic Tac Toe")
 
 
+def _create_circle(self, x, y, r, **kwargs):
+    return self.create_oval(x-r, y-r, x+r, y+r, **kwargs)
+
+tk.Canvas.create_circle = _create_circle
+
+
+
 def reload_game():
     easy.grid(row=2, column=0)
-    difficult.grid(row=2, column=1)
-    impossible.grid(row=2, column=2)
+    difficult.grid(row=3, column=0)
+    impossible.grid(row=4, column=0)
     play_again_yes.grid_forget()
     play_again_no.grid_forget()
     for tiles in drawing_list:
@@ -41,6 +48,9 @@ def reload_game():
 def player_turn(player):
     player_first.grid_forget()
     computer_first.grid_forget()
+  
+    
+    
     gameboard.delete(board_line_centrex1)
     gameboard.delete(board_line_lowerx1)
     gameboard.delete(board_line_upperx1)
@@ -52,7 +62,14 @@ def player_turn(player):
         game_text.config(text="Please take your turn.")
     else:
         computer_move()
-        
+
+
+'''root.columnconfigure(2, weight=1)
+l1.grid(row=1, column=1, columnspan=2, sticky="ew")
+l2.grid(row=1, column=3, sticky="ew")
+l3.grid(row=2, column=1, sticky="ew")
+l4.grid(row=2, column=3, sticky="ew")'''
+
 
 def set_difficulty(diff):
    
@@ -60,8 +77,9 @@ def set_difficulty(diff):
     difficult.grid_forget()
     impossible.grid_forget()
     player_first.grid(row=2, column=0)
-    computer_first.grid(row=2, column=1)
-    game_text.config(text="Please choose a difficulty level for computer")
+    computer_first.grid(row=3, column=0)
+    game_text.config(image=gofirst)
+    
     for numkeys in range (9):
         root.bind((numkeys + 1), place_piece)
     return diff
@@ -70,14 +88,13 @@ def update_values(move, active_player):
     choice = int(move)
     #default amount to add; 2 for player, 5 for computer
     amount = 0
-    print("ACTIVE PLAYER: " + str(active_player))
+    
 
     if active_player == "P":
         amount = 2
     else:
         amount = 5
-    print("AMOUNT: " + str(amount))
-    print("MOVE: " + str(move))
+
     if choice == 1:
         board_values[0] += amount
         board_values[3] += amount
@@ -121,8 +138,6 @@ def place_piece(event):
         board_col = (int(event.char) - 1) % 3
         if [board_row, board_col] in available_moves:
             available_moves.remove([board_row, board_col])
-            print("avail moves: " + str(available_moves))
-            print("EVENT CHAR: " + str(event.char))
             #place
             x1 = int(event.char)
             y1 = 0
@@ -151,15 +166,15 @@ def place_piece(event):
                 x2 = x1 + 90
                 y2 = 445
                 
-            drawing_list.append(gameboard.create_line(x1, y1, x2, y2, width=5, fill="purple"))
-            drawing_list.append(gameboard.create_line(x1, y2, x2, y1, width=5, fill="purple"))
+            drawing_list.append(gameboard.create_line(x1, y1, x2, y2, width=5, fill="blue"))
+            drawing_list.append(gameboard.create_line(x1, y2, x2, y1, width=5, fill="blue"))
             game_text.config(text = "Computer's turn.")
             board_list[board_row][board_col] = "O"
             update_values(event.char, "P")
         
 
             if 6 in board_values:
-                game_text.config(text = "Player wins! \n Play again?")
+                game_text.config(image=winpic)
                 play_again()
                 
             elif available_moves == []:
@@ -167,7 +182,7 @@ def place_piece(event):
                 play_again()
                 
             elif 15 in board_values:
-                game_text.config(text = "COMPUTER WINS! \n Play again?")
+                game_text.config(image=losepic)
                 play_again()
 
 
@@ -177,7 +192,6 @@ def place_piece(event):
 
         
     elif type(event) == int:
-        print("COMP FRIG")
         board_row = int((event - 1)/3)
         board_col = (event - 1) % 3
         #place
@@ -207,13 +221,14 @@ def place_piece(event):
             x1 = ((x1 - 6) * 100) + 55
             x2 = x1 + 90
             y2 = 445
-            
-        drawing_list.append(gameboard.create_line(x1, y1, x2, y2, width=5, fill="red"))
-        drawing_list.append(gameboard.create_line(x1, y2, x2, y1, width=5, fill="red"))
+
+        drawing_list.append(gameboard.create_circle(x1 + 45, y1 + 45, 40, width=5, outline="red"))   
+        #drawing_list.append(gameboard.create_line(x1, y1, x2, y2, width=5, fill="red"))
+        #drawing_list.append(gameboard.create_line(x1, y2, x2, y1, width=5, fill="red"))
 
         
         if 6 in board_values:
-            print(text = "Player wins! \n Play again?")
+            game_text.config(image=winpic)
             play_again()
             
         elif available_moves == []:
@@ -221,106 +236,78 @@ def place_piece(event):
             play_again()
             
         elif 15 in board_values:
-            game_text.config(text = "COMPUTER WINS! \n Play again?")
+            game_text.config(image=losepic)
             play_again()
 
 
 def play_again():
-    play_again_yes.grid(row=1, column=2)
-    play_again_no.grid(row=1, column=3)
+    play_again_yes.grid(row=2, column=0)
+    play_again_no.grid(row=3, column=0)
         
 canvas = tk.Canvas(root, width=800, height=800)
 canvas.pack()
 
-
+difflvl = tk.PhotoImage(file="difficultylvl.png")
+gofirst = tk.PhotoImage(file="goesfirst.png")
     
-game_text = tk.Label(canvas, text = "Welcome to \n Tic Tac Toe \n Please Choose Game Difficulty:")
-game_text.grid(row = 0, column = 1)
+game_text = tk.Label(canvas, image=difflvl)
+game_text.grid(row = 1, column = 0)
 
 easypic = tk.PhotoImage(file="easy.png")
+diffpic = tk.PhotoImage(file="difficult.png")
+impopic = tk.PhotoImage(file="impossible.png")
 
-
- 
-
-
-
+playpic = tk.PhotoImage(file="player.png")
+compic = tk.PhotoImage(file="computer.png")
+winpic = tk.PhotoImage(file="winner.png")
+losepic = tk.PhotoImage(file="loser.png")
+yespic = tk.PhotoImage(file="yes.png")
+nopic = tk.PhotoImage(file="no.png")
 
 easy = ttk.Button(canvas, image=easypic, command = lambda: difficulty.append(set_difficulty("E")))
 easy.grid(row=2, column=0)
 
-difficult = ttk.Button(canvas, text = "Difficult", command = lambda: difficulty.append(set_difficulty("D")))
-difficult.grid(row=2, column=1)
+difficult = ttk.Button(canvas, image=diffpic, command = lambda: difficulty.append(set_difficulty("D")))
+difficult.grid(row=3, column=0)
 
-impossible = ttk.Button(canvas, text = "Impossible", command = lambda: difficulty.append(set_difficulty("I")))
-impossible.grid(row=2, column=2)
+impossible = ttk.Button(canvas, image=impopic, command = lambda: difficulty.append(set_difficulty("I")))
+impossible.grid(row=4, column=0)
 
-player_first = ttk.Button(canvas, text = "Player", command = lambda: player_turn("P"))
-
-
-computer_first = ttk.Button(canvas, text = "Computer", command = lambda: player_turn("C"))
-
-play_again_yes = ttk.Button(canvas, text = "Yes", command = lambda: reload_game())
-play_again_no = ttk.Button(canvas, text = "No", command = lambda:root.destroy())
+player_first = ttk.Button(canvas, image = playpic, text = "Player", command = lambda: player_turn("P"))
 
 
-gameboard = tk.Canvas(canvas, width = 600, height = 600)
-gameboard.grid(row=3, column=0)
+computer_first = ttk.Button(canvas, image=compic, text = "Computer", command = lambda: player_turn("C"))
+
+play_again_yes = ttk.Button(canvas, image = yespic, text = "Yes", command = lambda: reload_game())
+play_again_no = ttk.Button(canvas, image = nopic, text = "No", command = lambda:root.destroy())
 
 
-tict = gameboard.create_line(10, 10, 55, 10, fill="blue", width=10)
-tict2 = gameboard.create_line(35, 10, 35, 70, fill="blue", width=10)
+gameboard = tk.Canvas(canvas, width = 400, height = 600)
+gameboard.grid(row=5, column=0)
 
-tici = gameboard.create_line(65, 10, 65, 70, fill="blue", width=10)
-
-ticc = gameboard.create_line(75, 10, 120, 10, fill="blue", width=10)
-ticc2 = gameboard.create_line(80, 10, 80, 60, fill="blue", width=10)
-ticc3 = gameboard.create_line(75, 65, 120, 65, fill="blue", width=10)
-
-tact = gameboard.create_line(130, 10, 175, 10, fill="blue", width=10)
-tict2 = gameboard.create_line(155, 10, 155, 70, fill="blue", width=10)
-
-taca = gameboard.create_line(185, 10, 215, 10, fill="blue", width=10)
-taca2 = gameboard.create_line(185, 10, 185, 70, fill="blue", width=10)
-taca3 = gameboard.create_line(215, 10, 215, 70, fill="blue", width=10)
-taca4 = gameboard.create_line(185, 40, 215, 40, fill="blue", width=10)
-
-tacc = gameboard.create_line(225, 10, 270, 10, fill="blue", width=10)
-tacc2 = gameboard.create_line(230, 10, 230, 60, fill="blue", width=10)
-tacc3 = gameboard.create_line(225, 65, 270, 65, fill="blue", width=10)
-
-toet = gameboard.create_line(280, 10, 325, 10, fill="blue", width=10)
-toet2 = gameboard.create_line(305, 10, 305, 70, fill="blue", width=10)
-
-toeo = gameboard.create_line(335, 10, 365, 10, fill="blue", width=10)
-toeo2 = gameboard.create_line(335, 10, 335, 60, fill="blue", width=10)
-toeo3 = gameboard.create_line(335, 65, 365, 65, fill="blue", width=10)
-toeo4 = gameboard.create_line(365, 10, 365, 60, fill="blue", width=10)
-
-toee = gameboard.create_line(385, 10, 415, 10, fill="blue", width=10)
-toee2 = gameboard.create_line(385, 10, 385, 60, fill="blue", width=10)
-toee3 = gameboard.create_line(385, 65, 415, 65, fill="blue", width=10)
-toee4 = gameboard.create_line(385, 37, 415, 37, fill="blue", width=10)
-
-board_line_y = gameboard.create_line(250, 150, 250, 450, fill = "black", width=5)
-board_line_y2 = gameboard.create_line(350, 150, 350, 450, fill = "black", width=5)
-board_line_x = gameboard.create_line(150, 250, 450, 250, fill = "black", width=5)
-board_line_x2 = gameboard.create_line(150, 350, 450, 350, fill = "black", width=5)
+gametitle = tk.PhotoImage(file="title.png")
+game_title = tk.Label(canvas, image = gametitle)
+game_title.grid(row=0, column=0)
 
 
-board_line_centrex1 = gameboard.create_line(255, 345, 345, 255, fill = "red", width=5)
-board_line_centrex2 = gameboard.create_line(255, 255, 345, 345, fill = "red", width=5)
+board_line_y = gameboard.create_line(150, 50, 150, 350, fill = "black", width=5)
+board_line_y2 = gameboard.create_line(250, 50, 250, 350, fill = "black", width=5)
+board_line_x = gameboard.create_line(50, 150, 350, 150, fill = "black", width=5)
+board_line_x2 = gameboard.create_line(50, 250, 350, 250, fill = "black", width=5)
 
-board_line_lowerx1 = gameboard.create_line(155, 445, 245, 355, fill = "red", width=5)
-board_line_lowerx2 = gameboard.create_line(155, 355, 245, 445, fill = "red", width=5)
 
-board_line_upperx1 = gameboard.create_line(355, 155, 445, 245, fill = "red", width=5)
-board_line_upperx2 = gameboard.create_line(355, 245, 445, 155, fill = "red", width=5)
+board_line_centrex1 = gameboard.create_line(155, 245, 245, 155, fill = "red", width=5)
+board_line_centrex2 = gameboard.create_line(155, 155, 245, 245, fill = "red", width=5)
+
+board_line_lowerx1 = gameboard.create_line(55, 345, 145, 255, fill = "red", width=5)
+board_line_lowerx2 = gameboard.create_line(55, 255, 145, 345, fill = "red", width=5)
+
+board_line_upperx1 = gameboard.create_line(255, 55, 345, 145, fill = "red", width=5)
+board_line_upperx2 = gameboard.create_line(255, 145, 345, 55, fill = "red", width=5)
 
 
 
 #Update board_values to optimize computer moves as well as for checking for winner
-
-
 def computer_move():
     player_move = "C"
     board_index = 0
@@ -343,7 +330,7 @@ def computer_move():
                         highest_val = vals
                         best_move = board_index
                     board_index += 1
-    print("BEST MOVE: " + str(best_move))
+    
   #  return best_move
     
 #def computer_move2(diff, comp_strat, boardvals):
@@ -428,7 +415,6 @@ def computer_move():
             else:
                 for number in range(3):
                     if [number, (2 - number)] in available_moves and player_move == "C":
-                        print([number, (2 - number)])
                         board_list[number][2 - number] = "X"
                         available_moves.remove([number, (2 - number)])
                         best_move = (number * 2) + 3
@@ -447,13 +433,13 @@ def computer_move():
         game_text.config(text="Please take your turn.")
 
     if 6 in board_values:
-        print(text = "Player wins! \n Play again?")
+        game_text.config(image=winpic)
         play_again()
     elif available_moves == []:
         game_text.config(text = "Tie game! Play again?")
         play_again()
     elif 15 in board_values:
-        game_text.config(text = "COMPUTER WINS YOU LOSE NOOB \n Play again?")
+        game_text.config(image=losepic)
         play_again()
     
     return
