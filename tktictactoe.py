@@ -24,8 +24,6 @@ def _create_circle(self, x, y, r, **kwargs):
 
 tk.Canvas.create_circle = _create_circle
 
-
-
 def reload_game():
     easy.grid(row=2, column=0)
     difficult.grid(row=3, column=0)
@@ -46,8 +44,8 @@ def reload_game():
         board_values[values] = 0
 
 def player_turn(player):
-    player_first.grid_forget()
-    computer_first.grid_forget()
+    player_first.config(image=blankpic, state = "disabled")
+    computer_first.config(image=blankpic, state = "disabled")
   
     
     
@@ -75,7 +73,7 @@ def set_difficulty(diff):
    
     easy.grid_forget()
     difficult.grid_forget()
-    impossible.grid_forget()
+    impossible.configure(image=blankpic, state="disabled", bd=0)
     player_first.grid(row=2, column=0)
     computer_first.grid(row=3, column=0)
     game_text.config(image=gofirst)
@@ -132,6 +130,10 @@ def update_values(move, active_player):
          
 def place_piece(event):
 
+
+
+
+
     
     if type(event) == tk.Event and "your" in game_text.cget('text'):
         board_row = int((int(event.char) - 1)/3)
@@ -151,20 +153,20 @@ def place_piece(event):
             #if its 1mod3, x1 is 155-245; 2mod3, x1 is 255-345; 0mod3, x1 is 355-445
 
             if x1 < 4:
-                y1 = 155
-                x1 = (x1 *100) + 55
+                y1 = 25
+                x1 = (x1 *100) - 45
                 x2 = x1 + 90
-                y2 = 245
+                y2 = 115
             elif 4 <= x1 <= 6:
-                y1 = 255
-                x1 = ((x1 - 3) * 100) + 55
+                y1 = 125
+                x1 = ((x1 - 3) * 100) - 45
+                x2 = x1 + 90
+                y2 = 215
+            else:
+                y1 = 225
+                x1 = ((x1 - 6) * 100) - 45
                 x2 = x1 + 90
                 y2 = 345
-            else:
-                y1 = 355
-                x1 = ((x1 - 6) * 100) + 55
-                x2 = x1 + 90
-                y2 = 445
                 
             drawing_list.append(gameboard.create_line(x1, y1, x2, y2, width=5, fill="blue"))
             drawing_list.append(gameboard.create_line(x1, y2, x2, y1, width=5, fill="blue"))
@@ -207,20 +209,20 @@ def place_piece(event):
         #if its 1mod3, x1 is 155-245; 2mod3, x1 is 255-345; 0mod3, x1 is 355-445
 
         if x1 < 4:
-            y1 = 155
-            x1 = (x1 *100) + 55
+            y1 = 25
+            x1 = (x1 * 100) - 45
             x2 = x1 + 90
-            y2 = 245
+            y2 = 115
         elif 4 <= x1 <= 6:
-            y1 = 255
-            x1 = ((x1 - 3) * 100) + 55
+            y1 = 125
+            x1 = ((x1 - 3) * 100) - 45
             x2 = x1 + 90
-            y2 = 345
+            y2 = 215
         else:
-            y1 = 355
-            x1 = ((x1 - 6) * 100) + 55
+            y1 = 225
+            x1 = ((x1 - 6) * 100) - 45
             x2 = x1 + 90
-            y2 = 445
+            y2 = 315
 
         drawing_list.append(gameboard.create_circle(x1 + 45, y1 + 45, 40, width=5, outline="red"))   
         #drawing_list.append(gameboard.create_line(x1, y1, x2, y2, width=5, fill="red"))
@@ -243,9 +245,17 @@ def place_piece(event):
 def play_again():
     play_again_yes.grid(row=2, column=0)
     play_again_no.grid(row=3, column=0)
+    
         
 canvas = tk.Canvas(root, width=800, height=800)
 canvas.pack()
+canvas.grid_rowconfigure(0, weight = 0)
+canvas.grid_rowconfigure(1, weight = 0)
+canvas.grid_rowconfigure(2, weight = 0)
+canvas.grid_rowconfigure(3, weight = 0)
+canvas.grid_rowconfigure(4, weight = 0)
+
+
 
 difflvl = tk.PhotoImage(file="difficultylvl.png")
 gofirst = tk.PhotoImage(file="goesfirst.png")
@@ -264,13 +274,15 @@ losepic = tk.PhotoImage(file="loser.png")
 yespic = tk.PhotoImage(file="yes.png")
 nopic = tk.PhotoImage(file="no.png")
 
+blankpic = tk.PhotoImage(file="blankimp.png")
+
 easy = ttk.Button(canvas, image=easypic, command = lambda: difficulty.append(set_difficulty("E")))
 easy.grid(row=2, column=0)
 
 difficult = ttk.Button(canvas, image=diffpic, command = lambda: difficulty.append(set_difficulty("D")))
 difficult.grid(row=3, column=0)
 
-impossible = ttk.Button(canvas, image=impopic, command = lambda: difficulty.append(set_difficulty("I")))
+impossible = tk.Button(canvas, image=impopic, command = lambda: difficulty.append(set_difficulty("I")))
 impossible.grid(row=4, column=0)
 
 player_first = ttk.Button(canvas, image = playpic, text = "Player", command = lambda: player_turn("P"))
@@ -290,20 +302,20 @@ game_title = tk.Label(canvas, image = gametitle)
 game_title.grid(row=0, column=0)
 
 
-board_line_y = gameboard.create_line(150, 50, 150, 350, fill = "black", width=5)
-board_line_y2 = gameboard.create_line(250, 50, 250, 350, fill = "black", width=5)
-board_line_x = gameboard.create_line(50, 150, 350, 150, fill = "black", width=5)
-board_line_x2 = gameboard.create_line(50, 250, 350, 250, fill = "black", width=5)
+board_line_y = gameboard.create_line(150, 20, 150, 320, fill = "black", width=5)
+board_line_y2 = gameboard.create_line(250, 20, 250, 320, fill = "black", width=5)
+board_line_x = gameboard.create_line(50, 120, 350, 120, fill = "black", width=5)
+board_line_x2 = gameboard.create_line(50, 220, 350, 220, fill = "black", width=5)
 
 
-board_line_centrex1 = gameboard.create_line(155, 245, 245, 155, fill = "red", width=5)
-board_line_centrex2 = gameboard.create_line(155, 155, 245, 245, fill = "red", width=5)
+board_line_centrex1 = gameboard.create_line(155, 215, 245, 125, fill = "red", width=5)
+board_line_centrex2 = gameboard.create_line(155, 125, 245, 215, fill = "red", width=5)
 
-board_line_lowerx1 = gameboard.create_line(55, 345, 145, 255, fill = "red", width=5)
-board_line_lowerx2 = gameboard.create_line(55, 255, 145, 345, fill = "red", width=5)
+board_line_lowerx1 = gameboard.create_line(55, 315, 145, 225, fill = "red", width=5)
+board_line_lowerx2 = gameboard.create_line(55, 225, 145, 315, fill = "red", width=5)
 
-board_line_upperx1 = gameboard.create_line(255, 55, 345, 145, fill = "red", width=5)
-board_line_upperx2 = gameboard.create_line(255, 145, 345, 55, fill = "red", width=5)
+board_line_upperx1 = gameboard.create_line(255, 25, 345, 115, fill = "red", width=5)
+board_line_upperx2 = gameboard.create_line(255, 115, 345, 25, fill = "red", width=5)
 
 
 
