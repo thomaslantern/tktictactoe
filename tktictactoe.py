@@ -25,11 +25,16 @@ def _create_circle(self, x, y, r, **kwargs):
 tk.Canvas.create_circle = _create_circle
 
 def reload_game():
-    easy.grid(row=2, column=0)
-    difficult.grid(row=3, column=0)
-    impossible.grid(row=4, column=0)
+    player_first.grid_forget()
+    computer_first.grid_forget()
+    easy.config(image=easypic)
+    easy.grid(row = 2, column = 0)
+    difficult.config(image=diffpic)
+    difficult.grid(row = 3, column = 0)
+    impossible.config(image=impopic, state = "active", bd = 2)
     play_again_yes.grid_forget()
     play_again_no.grid_forget()
+    game_text.config(image=difflvl)
     for tiles in drawing_list:
         gameboard.delete(tiles)
     board_list.clear()
@@ -44,8 +49,8 @@ def reload_game():
         board_values[values] = 0
 
 def player_turn(player):
-    player_first.config(image=blankpic, state = "disabled")
-    computer_first.config(image=blankpic, state = "disabled")
+    player_first.config(image=blankpic, state = "disabled", bd=0)
+    computer_first.config(image=blankpic, state = "disabled", bd=0)
   
     
     
@@ -62,25 +67,26 @@ def player_turn(player):
         computer_move()
 
 
-'''root.columnconfigure(2, weight=1)
-l1.grid(row=1, column=1, columnspan=2, sticky="ew")
-l2.grid(row=1, column=3, sticky="ew")
-l3.grid(row=2, column=1, sticky="ew")
-l4.grid(row=2, column=3, sticky="ew")'''
-
-
 def set_difficulty(diff):
-   
     easy.grid_forget()
     difficult.grid_forget()
-    impossible.configure(image=blankpic, state="disabled", bd=0)
+    impossible.configure(image=blankpic, state="disabled", bd = 0)
+    player_first.config(image=playpic, state="active", bd = 2)
+    computer_first.config(image=compic, state="active", bd = 2)
     player_first.grid(row=2, column=0)
     computer_first.grid(row=3, column=0)
     game_text.config(image=gofirst)
     
     for numkeys in range (9):
         root.bind((numkeys + 1), place_piece)
+
+    root.bind("<Button-1>", place_piece)
+    
+    
+
     return diff
+
+    
     
 def update_values(move, active_player):
     choice = int(move)
@@ -129,20 +135,27 @@ def update_values(move, active_player):
  
          
 def place_piece(event):
-
-
-
-
-
+    
     
     if type(event) == tk.Event and "your" in game_text.cget('text'):
-        board_row = int((int(event.char) - 1)/3)
-        board_col = (int(event.char) - 1) % 3
+        #x: 50-145, 150-245, 250-345
+        #y: 30-115, 130-215, 230-315
+        #board row is int of  x-50 / 100
+        #board row is int of y-30 / 100
+        if str(event.type) == 'KeyPress':
+            board_row = int((int(event.char) - 1)/3)
+            board_col = (int(event.char) - 1) % 3
+            move_choice = int(event.char)
+        elif str(event.type) == 'ButtonPress':
+            board_col = int((event.x - 50)/100)
+            board_row = int((event.y - 30)/100)
+            move_choice = (board_row * 3) + (board_col + 1)
         if [board_row, board_col] in available_moves:
             available_moves.remove([board_row, board_col])
             #place
-            x1 = int(event.char)
+            
             y1 = 0
+            
             #155-245 x1 for 1, 4, 7
             #255-345 x1 for 2, 5, 8
             #355-445 x1 for 3, 6, 9
@@ -152,27 +165,27 @@ def place_piece(event):
             #355-445 y1 for 7, 8, 9
             #if its 1mod3, x1 is 155-245; 2mod3, x1 is 255-345; 0mod3, x1 is 355-445
 
-            if x1 < 4:
+            if move_choice < 4:
                 y1 = 25
-                x1 = (x1 *100) - 45
+                x1 = (move_choice *100) - 45
                 x2 = x1 + 90
                 y2 = 115
-            elif 4 <= x1 <= 6:
+            elif 4 <= move_choice <= 6:
                 y1 = 125
-                x1 = ((x1 - 3) * 100) - 45
+                x1 = ((move_choice - 3) * 100) - 45
                 x2 = x1 + 90
                 y2 = 215
             else:
                 y1 = 225
-                x1 = ((x1 - 6) * 100) - 45
+                x1 = ((move_choice - 6) * 100) - 45
                 x2 = x1 + 90
-                y2 = 345
+                y2 = 315
                 
             drawing_list.append(gameboard.create_line(x1, y1, x2, y2, width=5, fill="blue"))
             drawing_list.append(gameboard.create_line(x1, y2, x2, y1, width=5, fill="blue"))
             game_text.config(text = "Computer's turn.")
             board_list[board_row][board_col] = "O"
-            update_values(event.char, "P")
+            update_values(move_choice, "P")
         
 
             if 6 in board_values:
@@ -180,7 +193,7 @@ def place_piece(event):
                 play_again()
                 
             elif available_moves == []:
-                game_text.config(text = "Tie game! \n Play again?")
+                game_text.config(image=tiepic)
                 play_again()
                 
             elif 15 in board_values:
@@ -234,7 +247,7 @@ def place_piece(event):
             play_again()
             
         elif available_moves == []:
-            game_text.config(text = "Tie game! \n Play again?")
+            game_text.config(image=tiepic)
             play_again()
             
         elif 15 in board_values:
@@ -244,16 +257,13 @@ def place_piece(event):
 
 def play_again():
     play_again_yes.grid(row=2, column=0)
+    play_again_yes.config(bd=4)
     play_again_no.grid(row=3, column=0)
-    
+    play_again_no.config(bd=3)
+    game_text.config(text="Play again?")
         
 canvas = tk.Canvas(root, width=800, height=800)
 canvas.pack()
-canvas.grid_rowconfigure(0, weight = 0)
-canvas.grid_rowconfigure(1, weight = 0)
-canvas.grid_rowconfigure(2, weight = 0)
-canvas.grid_rowconfigure(3, weight = 0)
-canvas.grid_rowconfigure(4, weight = 0)
 
 
 
@@ -271,27 +281,28 @@ playpic = tk.PhotoImage(file="player.png")
 compic = tk.PhotoImage(file="computer.png")
 winpic = tk.PhotoImage(file="winner.png")
 losepic = tk.PhotoImage(file="loser.png")
+tiepic = tk.PhotoImage(file="tie.png")
 yespic = tk.PhotoImage(file="yes.png")
 nopic = tk.PhotoImage(file="no.png")
 
 blankpic = tk.PhotoImage(file="blankimp.png")
 
-easy = ttk.Button(canvas, image=easypic, command = lambda: difficulty.append(set_difficulty("E")))
+easy = tk.Button(canvas, image=easypic, command = lambda: difficulty.append(set_difficulty("E")))
 easy.grid(row=2, column=0)
 
-difficult = ttk.Button(canvas, image=diffpic, command = lambda: difficulty.append(set_difficulty("D")))
+difficult = tk.Button(canvas, image=diffpic, command = lambda: difficulty.append(set_difficulty("D")))
 difficult.grid(row=3, column=0)
 
 impossible = tk.Button(canvas, image=impopic, command = lambda: difficulty.append(set_difficulty("I")))
 impossible.grid(row=4, column=0)
 
-player_first = ttk.Button(canvas, image = playpic, text = "Player", command = lambda: player_turn("P"))
+player_first = tk.Button(canvas, image = playpic, text = "Player", command = lambda: player_turn("P"))
 
 
-computer_first = ttk.Button(canvas, image=compic, text = "Computer", command = lambda: player_turn("C"))
+computer_first = tk.Button(canvas, image=compic, text = "Computer", command = lambda: player_turn("C"))
 
-play_again_yes = ttk.Button(canvas, image = yespic, text = "Yes", command = lambda: reload_game())
-play_again_no = ttk.Button(canvas, image = nopic, text = "No", command = lambda:root.destroy())
+play_again_yes = tk.Button(canvas, image = yespic, text = "Yes", command = lambda: reload_game())
+play_again_no = tk.Button(canvas, image = nopic, text = "No", command = lambda:root.destroy())
 
 
 gameboard = tk.Canvas(canvas, width = 400, height = 600)
@@ -448,7 +459,7 @@ def computer_move():
         game_text.config(image=winpic)
         play_again()
     elif available_moves == []:
-        game_text.config(text = "Tie game! Play again?")
+        game_text.config(image=tiepic)
         play_again()
     elif 15 in board_values:
         game_text.config(image=losepic)
