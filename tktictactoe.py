@@ -52,7 +52,7 @@ def player_turn(player):
     player_first.config(image=blankpic, state = "disabled", bd=0)
     computer_first.config(image=blankpic, state = "disabled", bd=0)
   
-    
+    game_text.configure(image=gdlk)
     
     gameboard.delete(board_line_centrex1)
     gameboard.delete(board_line_lowerx1)
@@ -284,6 +284,7 @@ losepic = tk.PhotoImage(file="loser.png")
 tiepic = tk.PhotoImage(file="tie.png")
 yespic = tk.PhotoImage(file="yes.png")
 nopic = tk.PhotoImage(file="no.png")
+gdlk = tk.PhotoImage(file="gdluck.png")
 
 blankpic = tk.PhotoImage(file="blankimp.png")
 
