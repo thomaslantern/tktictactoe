@@ -5,13 +5,15 @@ from tkinter import ttk
 
 
 board_list = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"]]
-available_moves = [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]]
+available_moves = [[0, 0], [0, 1], [0, 2],
+                   [1, 0], [1, 1], [1, 2],
+                   [2, 0], [2, 1], [2, 2]]
 turn = ""
 player_move = ""
 difficulty = []
 drawing_list = []
 
-#Set a value for each row, column, and diagonal respectively to facilitate best computer moves
+# Set value for rows, columns, and diagonals for computer moves
 board_values = [0, 0, 0, 0, 0, 0, 0, 0]
 
 
@@ -22,7 +24,9 @@ root.title("Tic Tac Toe")
 def _create_circle(self, x, y, r, **kwargs):
     return self.create_oval(x-r, y-r, x+r, y+r, **kwargs)
 
+
 tk.Canvas.create_circle = _create_circle
+
 
 def reload_game():
     player_first.grid_forget()
@@ -38,10 +42,14 @@ def reload_game():
     for tiles in drawing_list:
         gameboard.delete(tiles)
     board_list.clear()
-    for list_items in [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"]]:
+    for list_items in [["1", "2", "3"],
+                       ["4", "5", "6"],
+                       ["7", "8", "9"]]:
         board_list.append(list_items)
     available_moves.clear()
-    for avail_items in [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]]:
+    for avail_items in [[0, 0], [0, 1], [0, 2],
+                        [1, 0], [1, 1], [1, 2],
+                        [2, 0], [2, 1], [2, 2]]:
         available_moves.append(avail_items)
     difficulty.clear()
     drawing_list.clear()
@@ -90,10 +98,8 @@ def set_difficulty(diff):
     
 def update_values(move, active_player):
     choice = int(move)
-    #default amount to add; 2 for player, 5 for computer
-    amount = 0
     
-
+   
     if active_player == "P":
         amount = 2
     else:
@@ -138,10 +144,7 @@ def place_piece(event):
     
     
     if type(event) == tk.Event and "your" in game_text.cget('text'):
-        #x: 50-145, 150-245, 250-345
-        #y: 30-115, 130-215, 230-315
-        #board row is int of  x-50 / 100
-        #board row is int of y-30 / 100
+        
         if str(event.type) == 'KeyPress':
             board_row = int((int(event.char) - 1)/3)
             board_col = (int(event.char) - 1) % 3
@@ -152,19 +155,8 @@ def place_piece(event):
             move_choice = (board_row * 3) + (board_col + 1)
         if [board_row, board_col] in available_moves:
             available_moves.remove([board_row, board_col])
-            #place
-            
-            y1 = 0
-            
-            #155-245 x1 for 1, 4, 7
-            #255-345 x1 for 2, 5, 8
-            #355-445 x1 for 3, 6, 9
 
-            #155-245 y1 for 1, 2, 3
-            #255-345 y1 for 4, 5, 6
-            #355-445 y1 for 7, 8, 9
-            #if its 1mod3, x1 is 155-245; 2mod3, x1 is 255-345; 0mod3, x1 is 355-445
-
+                     
             if move_choice < 4:
                 y1 = 25
                 x1 = (move_choice *100) - 45
@@ -209,18 +201,9 @@ def place_piece(event):
     elif type(event) == int:
         board_row = int((event - 1)/3)
         board_col = (event - 1) % 3
-        #place
         x1 = int(event)
         y1 = 0
-        #155-245 x1 for 1, 4, 7
-        #255-345 x1 for 2, 5, 8
-        #355-445 x1 for 3, 6, 9
-
-        #155-245 y1 for 1, 2, 3
-        #255-345 y1 for 4, 5, 6
-        #355-445 y1 for 7, 8, 9
-        #if its 1mod3, x1 is 155-245; 2mod3, x1 is 255-345; 0mod3, x1 is 355-445
-
+        
         if x1 < 4:
             y1 = 25
             x1 = (x1 * 100) - 45
@@ -238,9 +221,7 @@ def place_piece(event):
             y2 = 315
 
         drawing_list.append(gameboard.create_circle(x1 + 45, y1 + 45, 40, width=5, outline="red"))   
-        #drawing_list.append(gameboard.create_line(x1, y1, x2, y2, width=5, fill="red"))
-        #drawing_list.append(gameboard.create_line(x1, y2, x2, y1, width=5, fill="red"))
-
+        
         
         if 6 in board_values:
             game_text.config(image=winpic)
@@ -331,7 +312,6 @@ board_line_upperx2 = gameboard.create_line(255, 115, 345, 25, fill = "red", widt
 
 
 
-#Update board_values to optimize computer moves as well as for checking for winner
 def computer_move():
     player_move = "C"
     board_index = 0
@@ -355,14 +335,9 @@ def computer_move():
                         best_move = board_index
                     board_index += 1
     
-  #  return best_move
-    
-#def computer_move2(diff, comp_strat, boardvals):
-#if "C" in difficulty:
- #   display_board(board_list)
     
     if "I" in difficulty or "D" in difficulty:
-        #insert an "X" into the center of the board if it's empty
+        # Insert an "X" into the center of the board if it's empty
         if board_list[1][1] == "5":
             board_list[1][1] = "X"
             available_moves.remove([1, 1])
@@ -370,7 +345,7 @@ def computer_move():
             best_move = 5
             
         else:
-            #insert an "X" into a row if it's the best move
+            # Insert an "X" into a row if it's the best move
             if best_move == 0:
                 for number in range(0, 3):
                     if [0, number] in available_moves and player_move == "C":
@@ -398,7 +373,7 @@ def computer_move():
                         update_values(best_move, "C")
                         player_move = "P"
                                   
-            #insert an "X" into a column if it's the best move
+            # Insert an "X" into a column if it's the best move
             elif best_move == 3:
                 for number in range(0, 3):
                     if [number, 0] in available_moves and player_move == "C":
@@ -426,7 +401,7 @@ def computer_move():
                         update_values(best_move, "C")
                         player_move = "P"
                                  
-            #insert an "X" into the top-left to bottom-right diagonal if it's the best move                       
+            # Insert an "X" into the top-left to bottom-right diagonal if it's the best move                       
             elif best_move == 6:
                 for number in range(3):
                     if [number, number] in available_moves and player_move == "C":
@@ -435,7 +410,7 @@ def computer_move():
                         best_move = (number + 1) + (number * 3)
                         update_values(best_move, "C")
                         player_move = "P"
-                                  
+            #   Bottom-left to top-right diagonal             
             else:
                 for number in range(3):
                     if [number, (2 - number)] in available_moves and player_move == "C":
