@@ -10,7 +10,6 @@ import tkinter as tk
 
 
 # Create a list of available moves
-board_list = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"]]
 move_avail = [[0, 0], [0, 1], [0, 2],
               [1, 0], [1, 1], [1, 2],
               [2, 0], [2, 1], [2, 2]]
@@ -147,7 +146,6 @@ def place_piece(event):
                                                   width=5,
                                                   fill="blue"))
             game_text.config(text = "Computer's turn.")
-            board_list[board_row][board_col] = "X"
             update_values(move_choice, "P")
         
 
@@ -233,11 +231,7 @@ def reload_game():
 
     for tiles in drawing_list:
         board.delete(tiles)
-    board_list.clear()
-    for list_items in [["1", "2", "3"],
-                       ["4", "5", "6"],
-                       ["7", "8", "9"]]:
-        board_list.append(list_items)
+        
     move_avail.clear()
     for avail_items in [[0, 0], [0, 1], [0, 2],
                         [1, 0], [1, 1], [1, 2],
@@ -280,8 +274,7 @@ def computer_move():
             
     
         # Insert an "O" into the center of the board if it's empty
-        if board_list[1][1] == "5":
-            board_list[1][1] = "O"
+        if [1, 1] in move_avail:
             move_avail.remove([1, 1])
             update_values(5, "C")
             best_move = 5
@@ -291,7 +284,6 @@ def computer_move():
             if best_move == 0:
                 for number in range(0, 3):
                     if [0, number] in move_avail and player_move == "C":
-                        board_list[0][number] = "O"
                         move_avail.remove([0, number])
                         best_move = (number + 1)
                         update_values(best_move, "C")
@@ -300,7 +292,6 @@ def computer_move():
             elif best_move == 1:
                 for number in range(0, 3):
                     if [1, number] in move_avail and player_move == "C":
-                        board_list[1][number] = "O"
                         move_avail.remove([1, number])
                         best_move = (3 + (number + 1))
                         update_values(best_move, "C")
@@ -309,7 +300,6 @@ def computer_move():
             elif best_move == 2:
                 for number in range(0, 3):
                     if [2, number] in move_avail and player_move == "C":
-                        board_list[2][number] = "O"
                         move_avail.remove([2, number])
                         best_move = (6 + (number + 1))
                         update_values(best_move, "C")
@@ -319,7 +309,6 @@ def computer_move():
             elif best_move == 3:
                 for number in range(0, 3):
                     if [number, 0] in move_avail and player_move == "C":
-                        board_list[number][0] = "X"
                         move_avail.remove([number, 0])
                         best_move = (number*3) + 1
                         update_values(best_move, "C")
@@ -328,7 +317,6 @@ def computer_move():
             elif best_move == 4:
                 for number in range(0, 3):
                     if [number, 1] in move_avail and player_move == "C":
-                        board_list[number][1] = "O"
                         move_avail.remove([number, 1])
                         best_move = (number * 3) + 2
                         update_values(best_move, "C")
@@ -337,7 +325,6 @@ def computer_move():
             elif best_move == 5:
                 for number in range(0, 3):
                     if [number, 2] in move_avail and player_move == "C":
-                        board_list[number][2] = "O"
                         move_avail.remove([number, 2])
                         best_move = (number*3) + 3
                         update_values(best_move, "C")
@@ -348,7 +335,6 @@ def computer_move():
             elif best_move == 6:
                 for number in range(3):
                     if [number, number] in move_avail and player_move == "C":
-                        board_list[number][number] = "O"
                         move_avail.remove([number, number])
                         best_move = (number + 1) + (number * 3)
                         update_values(best_move, "C")
@@ -357,7 +343,6 @@ def computer_move():
             else:
                 for number in range(3):
                     if [number, (2 - number)] in move_avail and player_move == "C":
-                        board_list[number][2 - number] = "O"
                         move_avail.remove([number, (2 - number)])
                         best_move = (number * 2) + 3
                         update_values(best_move, "C")
@@ -366,7 +351,6 @@ def computer_move():
     else:
         new_move = random.choice(move_avail)
         move_avail.remove(new_move)
-        board_list[new_move[0]][new_move[1]] = "O"
         best_move = (new_move[0]*3) + (new_move[1] + 1)
         update_values(best_move, "C")
         
