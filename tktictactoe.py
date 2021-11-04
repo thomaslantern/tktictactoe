@@ -1,5 +1,5 @@
 # TK-TIC-TAC-TOE:
-# A one-player game of tic-tac-toe, using tkinter
+# A one-player game of Tic-Tac-Toe, using tkinter
 #
 # Copyright (c) 2020 Thomas Wesley Scott
 # Author: Thomas Wesley Scott
@@ -7,13 +7,13 @@
 
 import random
 import tkinter as tk
-from tkinter import ttk
 
 
+# Create a list of available moves
 board_list = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"]]
 move_avail = [[0, 0], [0, 1], [0, 2],
-                   [1, 0], [1, 1], [1, 2],
-                   [2, 0], [2, 1], [2, 2]]
+              [1, 0], [1, 1], [1, 2],
+              [2, 0], [2, 1], [2, 2]]
 turn = ""
 player_move = ""
 difficulty = []
@@ -23,39 +23,7 @@ drawing_list = []
 board_vals = [0, 0, 0, 0, 0, 0, 0, 0]
 
 
-# Update screen for choosing difficulty
-def reload_game():
-    player_first.grid_forget()
-    computer_first.grid_forget()
-    play_again_yes.grid_forget()
-    play_again_no.grid_forget()
-    easy.config(image=easypic)
-    easy.grid(row = 2, column = 0)
-    difficult.config(image=diffpic)
-    difficult.grid(row = 3, column = 0)
-    impossible.config(image=impopic, state = "active", bd = 2)
-    
-    game_text.config(image=difflvl)
-
-    for tiles in drawing_list:
-        board.delete(tiles)
-    board_list.clear()
-    for list_items in [["1", "2", "3"],
-                       ["4", "5", "6"],
-                       ["7", "8", "9"]]:
-        board_list.append(list_items)
-    move_avail.clear()
-    for avail_items in [[0, 0], [0, 1], [0, 2],
-                        [1, 0], [1, 1], [1, 2],
-                        [2, 0], [2, 1], [2, 2]]:
-        move_avail.append(avail_items)
-    difficulty.clear()
-    drawing_list.clear()
-    for values in range(8):
-        board_vals[values] = 0
-
-
-# Cleans up screen/board for new game
+# Clean up screen/board for new game
 def start_game(player):    
     player_first.config(image=blankpic, state = "disabled", bd=0)
     computer_first.config(image=blankpic, state = "disabled", bd=0)
@@ -249,6 +217,37 @@ def play_again():
     game_text.config(text="Play again?")
 
 
+# Reload game if player wishes to play again
+def reload_game():
+    player_first.grid_forget()
+    computer_first.grid_forget()
+    play_again_yes.grid_forget()
+    play_again_no.grid_forget()
+    easy.config(image=easypic)
+    easy.grid(row = 2, column = 0)
+    difficult.config(image=diffpic)
+    difficult.grid(row = 3, column = 0)
+    impossible.config(image=impopic, state = "active", bd = 2)
+    
+    game_text.config(image=difflvl)
+
+    for tiles in drawing_list:
+        board.delete(tiles)
+    board_list.clear()
+    for list_items in [["1", "2", "3"],
+                       ["4", "5", "6"],
+                       ["7", "8", "9"]]:
+        board_list.append(list_items)
+    move_avail.clear()
+    for avail_items in [[0, 0], [0, 1], [0, 2],
+                        [1, 0], [1, 1], [1, 2],
+                        [2, 0], [2, 1], [2, 2]]:
+        move_avail.append(avail_items)
+    difficulty.clear()
+    drawing_list.clear()
+    for values in range(8):
+        board_vals[values] = 0
+
 def computer_move():
     player_move = "C"
     board_index = 0
@@ -282,7 +281,7 @@ def computer_move():
     
         # Insert an "O" into the center of the board if it's empty
         if board_list[1][1] == "5":
-            board_list[1][1] = "X"
+            board_list[1][1] = "O"
             move_avail.remove([1, 1])
             update_values(5, "C")
             best_move = 5
@@ -405,8 +404,8 @@ canvas.pack()
 
 
 # Loading images for game
-difflvl = tk.PhotoImage(file="images\difficultylvl.png")
-gofirst = tk.PhotoImage(file="images\goesfirst.png")
+difflvl = tk.PhotoImage(file="images/difficultylvl.png")
+gofirst = tk.PhotoImage(file="images/goesfirst.png")
     
 game_text = tk.Label(canvas, image=difflvl)
 game_text.grid(row = 1, column = 0)
