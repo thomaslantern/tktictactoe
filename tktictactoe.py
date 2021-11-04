@@ -62,6 +62,11 @@ def set_difficulty(diff):
 
 
 def update_values(move, active_player):
+    # Each computer move adds a value of 5 to the appropriate column,
+    # row, or diagonal, and each player move adds a 2.
+    # These values are used by the computer player to determine its
+    # next move.
+
     choice = int(move)
     
    
@@ -104,9 +109,12 @@ def update_values(move, active_player):
         board_vals[5] += amount
         board_vals[6] += amount
  
-         
+
+# Draw an appropriate "X" or "O" on the board         
 def place_piece(event):
-        
+
+
+    #Draw an "X" for player's turn        
     if type(event) == tk.Event and "your" in game_text.cget('text'):
         
         if str(event.type) == 'KeyPress':
@@ -166,7 +174,7 @@ def place_piece(event):
                 computer_move()
                
 
-        
+    # Draw an "O" for computer's turn        
     elif type(event) == int:
         board_row = int((event - 1)/3)
         board_col = (event - 1) % 3
@@ -242,6 +250,11 @@ def reload_game():
     for values in range(8):
         board_vals[values] = 0
 
+
+# Computer takes its turn using this function. There are three
+# difficulty settings. "E", or Easy, picks a spot at random and
+# places an "O". The other difficulties use the board_vals
+# list to choose where best to place a piece.
 def computer_move():
     player_move = "C"
     board_index = 0
@@ -250,10 +263,18 @@ def computer_move():
     
     if "I" in difficulty or "D" in difficulty:           
         no_mid = ((max(board_vals) == 2) and ([1, 1] not in move_avail))
+        # If the only piece on the board is an "X" in the center,
+        # set best_move to 0 to place computer's "O" in the first
+        # row (ultimately it will "choose" the top-left corner).
         if no_mid and "I" in difficulty:
             best_move = 0
         
         else:
+            # vals of 10 means there are only two "O"s in that row
+            # so computer should complete that row to win.
+            # vals of 4 means human player will win that row on
+            # next turn, so computer should complete that line.
+            # otherwise, find a line with only one "O" (vals == 5)
             for vals in board_vals:
                 if vals == 10:
                     highest_val = 14
@@ -316,7 +337,8 @@ def computer_move():
                                   
             elif best_move == 4:
                 for number in range(0, 3):
-                    if [number, 1] in move_avail and player_move == "C":
+                    if ([number, 1] in move_avail
+                        and player_move == "C"):
                         move_avail.remove([number, 1])
                         best_move = (number * 3) + 2
                         update_values(best_move, "C")
@@ -324,7 +346,8 @@ def computer_move():
                                   
             elif best_move == 5:
                 for number in range(0, 3):
-                    if [number, 2] in move_avail and player_move == "C":
+                    if ([number, 2] in move_avail
+                        and player_move == "C"):
                         move_avail.remove([number, 2])
                         best_move = (number*3) + 3
                         update_values(best_move, "C")
@@ -334,7 +357,8 @@ def computer_move():
             # if it's the best move                       
             elif best_move == 6:
                 for number in range(3):
-                    if [number, number] in move_avail and player_move == "C":
+                    if ([number, number] in move_avail
+                        and player_move == "C"):
                         move_avail.remove([number, number])
                         best_move = (number + 1) + (number * 3)
                         update_values(best_move, "C")
@@ -342,12 +366,14 @@ def computer_move():
             #   Bottom-left to top-right diagonal             
             else:
                 for number in range(3):
-                    if [number, (2 - number)] in move_avail and player_move == "C":
+                    if ([number, (2 - number)] in move_avail
+                    and player_move == "C"):
                         move_avail.remove([number, (2 - number)])
                         best_move = (number * 2) + 3
                         update_values(best_move, "C")
                         player_move = "P"
-                                 
+
+    # Easy difficulty; pick a random spot to place "O"                                 
     else:
         new_move = random.choice(move_avail)
         move_avail.remove(new_move)
@@ -358,6 +384,7 @@ def computer_move():
     if move_avail != []:
         game_text.config(text="Please take your turn.")
 
+    # Check game state for a win or a draw
     if 6 in board_vals:
         game_text.config(image=winpic)
         play_again()
@@ -440,7 +467,6 @@ play_again_no = tk.Button(canvas, image = nopic, text = "No",
 # Draw the board
 board = tk.Canvas(canvas, width = 400, height = 600)
 board.grid(row=5, column=0)
-
 gametitle = tk.PhotoImage(file="images/title.png")
 game_title = tk.Label(canvas, image = gametitle)
 game_title.grid(row=0, column=0)
